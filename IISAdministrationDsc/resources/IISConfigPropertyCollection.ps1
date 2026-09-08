@@ -27,29 +27,23 @@ $Site = Get-IISConfigCollectionElement -ConfigCollection $SitesCollection -Confi
 $Elem = Get-IISConfigElement -ConfigElement $Site -ChildElementName 'limits'
 Set-IISConfigAttributeValue -ConfigElement $Elem -AttributeName 'MaxUrlSegments' -AttributeValue 16
 	#>
-	[DscProperty(Mandatory)]
-	[string] $WebsitePath
+	[DscProperty(Mandatory, Key)]
+	[string] $SectionPath
 	
 	[DscProperty(Mandatory)]
-	[string] $Filter
+	[hashtable] $ConfigAttribute
+	
+	[DscProperty(Mandatory, Key)]
+	[string] $ConfigID
+		
+	[DscProperty(Mandatory, Key)]
+	[string] $ElementName
+		
+	[DscProperty(Mandatory, Key)]
+	[string] $AttributeName
 		
 	[DscProperty(Mandatory)]
-	[string] $CollectionName
-		
-	[DscProperty(Mandatory)]
-	[string] $ItemName
-		
-	[DscProperty(Mandatory)]
-	[string] $ItemKeyName
-		
-	[DscProperty(Mandatory)]
-	[string] $ItemKeyValue
-		
-	[DscProperty(Mandatory)]
-	[string] $ItemPropertyName
-		
-	[DscProperty(Mandatory)]
-	[string] $ItemPropertyValue
+	[object] $AttributeValue
 
 	[DscProperty(Mandatory)]
 	[Ensure] $Ensure
@@ -60,14 +54,50 @@ Set-IISConfigAttributeValue -ConfigElement $Elem -AttributeName 'MaxUrlSegments'
 
 	[void]Set() {
 		# Apply Desired State
+		try {
+			$configSection = Get-IISConfigSection -SectionPath $this.SectionPath
+			$collection = Get-IISConfigCollection -ConfigElement $configSection
+			$colElement = Get-IISConfigCollectionElement -ConfigCollection $collection -ConfigAttribute $this.ConfigAttribute
+			$element = Get-IISConfigElement -ConfigElement $colElement -ChildElementName $this.ElementName
+			Set-IISConfigAttributeValue -ConfigElement $element -AttributeName $this.AttributeName -AttributeValue $this.AttributeValue
+		}
+		catch {
+			throw $_
+		}
 	}
 
 	[IISConfigPropertyCollection]Get() {
 		# Return current actual state
+
+		try {
+			$configSection = Get-IISConfigSection -SectionPath $this.SectionPath
+			$collection = Get-IISConfigCollection -ConfigElement $configSection
+			$colElement = Get-IISConfigCollectionElement -ConfigCollection $collection -ConfigAttribute $this.ConfigAttribute
+			$element = Get-IISConfigElement -ConfigElement $colElement -ChildElementName $this.ElementName
+		}
+		catch { $element = $null }
+
+		$new = [IISConfigPropertyCollection]::new()
+		$new.SectionPath = $this.SectionPath
+		$new.ConfigAttribute = $this.ConfigAttribute
+		$new.ConfigID = $this.ConfigID
+		$new.ElementName = $this.ElementName
+		$new.AttributeName = $this.AttributeName
+		$new.AttributeValue = @($element.Attributes).Where{$_.Name -eq $this.AttributeName}.Value
+		$new.Ensure = 'Present'
+		if (-not $element) { $new.Ensure = 'Absent' }
+
+		return $new
 	}
 
 	[bool]Test() {
 		# Check whether current state = desired state
+		$current = $this.Get()
+
+		return (
+			$this.Ensure -eq $current.Ensure -and
+			$this.AttributeValue -eq $current.AttributeValue
+		)
 	}
 
 	[Hashtable] GetConfigurableDscProperties() {
