@@ -64,7 +64,11 @@ class IISConfigCollection {
 		catch { throw "Invalid Filter: $($this.Filter)" }
 
 		$collection = Get-IISConfigCollection -ConfigElement $parent -CollectionName $this.Name
-		$legalElements = $collection | Where-Object $code
+		# Note: RawAttributes is a calculated property and regenerated on each request
+		foreach ($element in $collection) { Add-Member -InputObject $element -MemberType NoteProperty -Name AttributesEx -Value $element.RawAttributes }
+
+		$legalElementsAttributes = $($collection).AttributesEx | Where-Object $code
+		$legalElements = $collection | Where-Object AttributesEx -in $legalElementsAttributes
 		$countChanges = 0
 		foreach ($illegal in $collection | Where-Object { $_ -notin $legalElements } ) {
 			$collection.Remove($illegal)
@@ -112,7 +116,10 @@ class IISConfigCollection {
 		try { $code = [scriptblock]::Create($this.Filter) }
 		catch { throw "Invalid Filter: $($this.Filter)" }
 
-		$legalElements = $collection.Elements | Where-Object $code
+		# Note: RawAttributes is a calculated property and regenerated on each request
+		foreach ($element in $collection.Elements) { Add-Member -InputObject $element -MemberType NoteProperty -Name AttributesEx -Value $element.RawAttributes }
+		$legalElementsAttributes = $($collection.Elements).AttributesEx | Where-Object $code
+		$legalElements = $collection.Elements | Where-Object AttributesEx -in $legalElementsAttributes
 		if ($collection.Elements | Where-Object { $_ -notin $legalElements }) { return $false }
 		return $true
 	}
