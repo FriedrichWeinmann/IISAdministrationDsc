@@ -1,4 +1,35 @@
 ﻿function Test-Hashtable {
+	<#
+	.SYNOPSIS
+		Tests, whether the provided Hashtable matches the intended one.
+	
+	.DESCRIPTION
+		Tests, whether the provided Hashtable matches the intended one.
+		Compares hashtables / dictionaries in depth, including nested hashtables.
+	
+	.PARAMETER Intended
+		The hashtable containing the desired data.
+	
+	.PARAMETER Actual
+		The object collected from the field that is compared to the desired state.
+	
+	.PARAMETER ExactMatch
+		Require an exact match between the two hashtables.
+		By default, the actual hashtable may contain entries in addition to the oones the intended one requires.
+	
+	.EXAMPLE
+		PS C:\> Test-Hashtable -Intended $template -Actual $data
+		
+		Tests, whether the hashtable in $data has all the settings defined in $template.
+		$data may contain additional settings, beyond what is defined in $template.
+	
+	.EXAMPLE
+		PS C:\> Test-Hashtable -Intended $template -Actual $data -ExactMatch
+		
+		Tests, whether the hashtable in $data has all the settings defined in $template.
+		$data may NOT contain additional settings, beyond what is defined in $template.
+	#>
+	[OutputType([bool])]
 	[CmdletBinding()]
 	param (
 		[System.Collections.IDictionary]

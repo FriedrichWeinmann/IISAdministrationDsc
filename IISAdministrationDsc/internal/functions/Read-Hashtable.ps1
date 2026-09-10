@@ -28,6 +28,7 @@
     ----                   -----
     first.second           213
 #>
+	[OutputType([hashtable])]
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
