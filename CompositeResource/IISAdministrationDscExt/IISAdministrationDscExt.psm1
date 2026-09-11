@@ -1,0 +1,64 @@
+﻿configuration IISConfigAttributeExt {
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory = $true)]
+		[hashtable[]]
+		$Items
+	)
+
+	Import-DscResource -ModuleName PSDesiredStateConfiguration
+	Import-DscResource -ModuleName IISAdministrationDsc
+
+	foreach ($item in $items) {
+		$executionName = $item.ConfigName
+		$item.Remove('ConfigName')
+
+		if ($item.ContainsKey('AttributeValue')) {
+			$item.AttributeValue = $item.AttributeValue | ConvertTo-Json -Compress 
+		}
+
+		(Get-DscSplattedResource -ResourceName IISConfigAttribute -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
+	}
+}
+
+configuration IISConfigCollectionExt {
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory = $true)]
+		[hashtable[]]
+		$Items
+	)
+
+	Import-DscResource -ModuleName PSDesiredStateConfiguration
+	Import-DscResource -ModuleName IISAdministrationDsc
+
+	foreach ($item in $items) {
+		$executionName = $item.ConfigName
+		$item.Remove('ConfigName')
+
+		(Get-DscSplattedResource -ResourceName IISConfigCollection -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
+	}
+}
+
+configuration IISConfigCollectionItemExt {
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory = $true)]
+		[hashtable[]]
+		$Items
+	)
+
+	Import-DscResource -ModuleName PSDesiredStateConfiguration
+	Import-DscResource -ModuleName IISAdministrationDsc
+
+	foreach ($item in $items) {
+		$executionName = $item.ConfigName
+		$item.Remove('ConfigName')
+
+		if ($item.ContainsKey('Data')) {
+			$item.Data = $item.Data | ConvertTo-Json -Compress 
+		}
+
+		(Get-DscSplattedResource -ResourceName IISConfigCollectionItem -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
+	}
+}
