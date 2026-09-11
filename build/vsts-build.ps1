@@ -92,6 +92,28 @@ if ($AutoVersion)
 }
 #endregion Updating the Module Version
 
+#region Cleanup Manifest for DSC
+<#
+Issue: https://github.com/PowerShell/PSDesiredStateConfiguration/issues/117
+DSC Resources cannot be found, if Functions, Cmdlets AND Aliases are being exported, even if empty.
+Update-ModuleManifest automatically defines them as problematic, hence manual override here
+#>
+$manifestHash = Import-PowerShellDataFile -Path "$($publishDir.FullName)\IISAdministrationDsc\IISAdministrationDsc.psd1"
+$manifestText = [System.IO.File]::ReadAllText("$($publishDir.FullName)\IISAdministrationDsc\IISAdministrationDsc.psd1")
+
+if ($manifestHash.ContainsKey('FunctionsToExport') -and -not $manifestHash.FunctionsToExport) {
+	$manifestText = $manifestText -replace 'FunctionsToExport','# FunctionsToExport'
+}
+if ($manifestHash.ContainsKey('CmdletsToExport') -and -not $manifestHash.FunctionsToCmdletsToExportExport) {
+	$manifestText = $manifestText -replace 'CmdletsToExport','# CmdletsToExport'
+}
+if ($manifestHash.ContainsKey('AliasesToExport') -and -not $manifestHash.AliasesToExport) {
+	$manifestText = $manifestText -replace 'AliasesToExport','# AliasesToExport'
+}
+
+[System.IO.File]::WriteAllText("$($publishDir.FullName)\IISAdministrationDsc\IISAdministrationDsc.psd1", $manifestText, [System.Text.UTF8Encoding]::new($true))
+#endregion Cleanup Manifest for DSC
+
 #region Publish
 if ($SkipPublish) { return }
 if ($LocalRepo)
