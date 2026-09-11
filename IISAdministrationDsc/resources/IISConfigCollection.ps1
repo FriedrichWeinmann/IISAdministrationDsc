@@ -28,12 +28,12 @@ class IISConfigCollection {
 
 	[DscProperty()]
 	[Ensure] $Ensure = 'Present'
-
-	[array] $Elements
-
+	
 	[DscProperty(NotConfigurable)]
 	[Reason[]] $Reasons # Reserved for Azure Guest Configuration
 	#endregion DSC Properties
+
+	[array] $Elements
 
 	[void]Set() {
 		# Apply Desired State

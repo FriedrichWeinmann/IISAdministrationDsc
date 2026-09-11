@@ -34,7 +34,7 @@ class IISConfigCollectionItem {
 	[string] $CollectionName
 	
 	[DscProperty(Mandatory)]
-	[hashtable] $Data
+	[string] $Data
 	
 	[DscProperty(Mandatory, Key)]
 	[string]$ItemID
@@ -51,11 +51,15 @@ class IISConfigCollectionItem {
 	[Ensure]$Ensure = 'Present'
 
 	[DscProperty(NotConfigurable)]
-	[array] $MatchingItems
-
-	[DscProperty(NotConfigurable)]
 	[Reason[]] $Reasons # Reserved for Azure Guest Configuration
 	#endregion DSC Properties
+
+	[array] $MatchingItems
+
+	[hashtable]GetData() {
+		$content = $this.Data | ConvertFrom-Json
+		return $content | ConvertTo-Hashtable
+	}
 
 	[void]Set() {
 		# Apply Desired State
@@ -70,7 +74,7 @@ class IISConfigCollectionItem {
 		if (-not $current.MatchingItems) {
 			$parent = $this.GetElement()
 			$collection = Get-IISConfigCollection -ConfigElement $parent -CollectionName $this.CollectionName
-			New-IISConfigCollectionElement -ConfigCollection $collection -ConfigAttribute $this.Data
+			New-IISConfigCollectionElement -ConfigCollection $collection -ConfigAttribute $this.GetData()
 		}
 
 		# Case: Delete
@@ -82,9 +86,10 @@ class IISConfigCollectionItem {
 
 		# Case: Update
 		else {
-			foreach ($key in $this.Data.Keys) {
-				if ($this.Data.$key -eq $this.MatchingItems.RawAttributes.$key) { continue }
-				Set-IISConfigAttributeValue -ConfigElement $this.MatchingItems -AttributeName $key -AttributeValue $this.Data.$key
+			$dataSet = $this.GetData()
+			foreach ($key in $dataSet.Keys) {
+				if ($dataSet.$key -eq $this.MatchingItems.RawAttributes.$key) { continue }
+				Set-IISConfigAttributeValue -ConfigElement $this.MatchingItems -AttributeName $key -AttributeValue $dataSet.$key
 			}
 		}
 
@@ -123,7 +128,7 @@ class IISConfigCollectionItem {
 		# Match by Attribute Match
 		else {
 			$matching = $collection | Where-Object {
-				Test-Hashtable -Intended $this.Data -Actual $_.RawAttributes -ExactMatch:$this.ExactMatch
+				Test-Hashtable -Intended $this.GetData() -Actual $_.RawAttributes -ExactMatch:$this.ExactMatch
 			}
 		}
 		#endregion Match Elements
@@ -141,7 +146,7 @@ class IISConfigCollectionItem {
 			foreach ($key in $matching.RawAttributes.Keys) {
 				$newData[$key] = $matching.RawAttributes.$key
 			}
-			$current.Data = $newData
+			$current.Data = $newData | ConvertTo-Json -Depth 99
 			$current.MatchingItems = $matching
 			return $current
 		}
@@ -159,7 +164,7 @@ class IISConfigCollectionItem {
 		if (@($current.MatchingItems).Count -gt 1) { return $false }
 		if ($this.Ensure -eq 'Absent') { return $true }
 		
-		return Test-Hashtable -Intended $this.Data -Actual $current.Data -ExactMatch:$this.ExactMatch
+		return Test-Hashtable -Intended $this.GetData() -Actual $current.GetData() -ExactMatch:$this.ExactMatch
 	}
 
 	[object]GetElement() {
