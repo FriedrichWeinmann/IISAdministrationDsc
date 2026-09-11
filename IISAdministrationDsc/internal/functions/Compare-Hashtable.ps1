@@ -19,7 +19,7 @@
     When specified, results are not returned when the Reference and Difference are different.
     
     .EXAMPLE
-    PS C:\> Compare-Hashtable -ReferenceHashtable $MyConfigReference -DifferenceHOshtable (Get-Something -Config) 
+    PS C:\> Compare-Hashtable -ReferenceHashtable $MyConfigReference -DifferenceHashtable (Get-Something -Config)
    
     Compares the loaded ReferenceHashtable to the result of Get-Something.
 
@@ -43,6 +43,7 @@
 
 	begin {
 		function New-Change {
+			[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
 			[CmdletBinding()]
 			param (
 				[hashtable]

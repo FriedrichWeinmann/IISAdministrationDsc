@@ -24,28 +24,32 @@ class IISConfigAttribute {
 	[DscProperty(Key)]
 	[string] $Site
 
-	[DscProperty(Mandatory, Key)]
+	[DscProperty(Key)]
 	[string] $Path
 
 	[DscProperty(Mandatory, Key)]
 	[string] $AttributeName
 		
 	[DscProperty(Mandatory)]
-	[object] $AttributeValue
+	[string] $AttributeValue
 
-	[DscProperty(Mandatory)]
-	[Ensure]$Ensure
+	[DscProperty()]
+	[Ensure]$Ensure = 'Present'
 
 	[DscProperty(NotConfigurable)]
 	[Reason[]] $Reasons # Reserved for Azure Guest Configuration
 	#endregion DSC Properties
+
+	[object] GetValue() {
+		return $this.AttributeValue | ConvertFrom-Json
+	}
 
 	[void]Set() {
 		# Apply Desired State
 		$currentElement = $this.GetElement()
 		if ($null -eq $currentElement) { throw 'Element not found: {0} > {1} > {2}' -f $this.SectionPath, $this.Site, $this.Path }
 
-		Set-IISConfigAttributeValue -ConfigElement $currentElement -AttributeName $this.AttributeName -AttributeValue $this.AttributeValue
+		Set-IISConfigAttributeValue -ConfigElement $currentElement -AttributeName $this.AttributeName -AttributeValue $this.GetValue().PSObject.BaseObject
 	}
 
 	[IISConfigAttribute]Get() {
@@ -68,7 +72,7 @@ class IISConfigAttribute {
 
 		return (
 			$this.Ensure -eq $current.Ensure -and
-			$this.AttributeValue -eq $current.AttributeValue
+			$this.GetValue() -eq $current.AttributeValue
 		)
 	}
 

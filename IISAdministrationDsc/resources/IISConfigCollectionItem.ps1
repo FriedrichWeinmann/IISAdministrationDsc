@@ -27,7 +27,7 @@ class IISConfigCollectionItem {
 	[DscProperty(Key)]
 	[string] $Site
 
-	[DscProperty(Mandatory, Key)]
+	[DscProperty(Key)]
 	[string] $Path
 	
 	[DscProperty(Mandatory, Key)]
@@ -47,8 +47,8 @@ class IISConfigCollectionItem {
 	[DscProperty()]
 	[string] $Filter
 
-	[DscProperty(Mandatory)]
-	[Ensure]$Ensure
+	[DscProperty()]
+	[Ensure]$Ensure = 'Present'
 
 	[DscProperty(NotConfigurable)]
 	[array] $MatchingItems

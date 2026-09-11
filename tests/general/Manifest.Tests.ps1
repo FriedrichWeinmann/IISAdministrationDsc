@@ -3,13 +3,16 @@
 	$manifest = ((Get-Content "$moduleRoot\IISAdministrationDsc.psd1") -join "`n") | Invoke-Expression
 	Context "Basic resources validation" {
 		$files = Get-ChildItem "$moduleRoot\functions" -Recurse -File | Where-Object Name -like "*.ps1"
-		It "Exports all functions in the public folder" -TestCases @{ files = $files; manifest = $manifest } {
-			
-			$functions = (Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '<=').InputObject
+		$fileEntries = $files.BaseName
+		if (-not $fileEntries) { $fileEntries = @() }
+		$manifestEntries = $manifest.FunctionsToExport
+		if (-not $manifestEntries) { $manifestEntries = @() }
+		It "Exports all functions in the public folder" -TestCases @{ fileEntries = $fileEntries; manifestEntries = $manifestEntries } {
+			$functions = (Compare-Object -ReferenceObject $fileEntries -DifferenceObject $manifestEntries | Where-Object SideIndicator -Like '<=').InputObject
 			$functions | Should -BeNullOrEmpty
 		}
-		It "Exports no function that isn't also present in the public folder" -TestCases @{ files = $files; manifest = $manifest } {
-			$functions = (Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '=>').InputObject
+		It "Exports no function that isn't also present in the public folder" -TestCases @{ fileEntries = $fileEntries; manifestEntries = $manifestEntries } {
+			$functions = (Compare-Object -ReferenceObject $fileEntries -DifferenceObject $manifestEntries | Where-Object SideIndicator -Like '=>').InputObject
 			$functions | Should -BeNullOrEmpty
 		}
 		
