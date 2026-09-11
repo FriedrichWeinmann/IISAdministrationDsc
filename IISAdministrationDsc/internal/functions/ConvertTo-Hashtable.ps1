@@ -1,11 +1,30 @@
 ﻿function ConvertTo-Hashtable {
+	<#
+	.SYNOPSIS
+		Simple Object to Hashtable conversion.
+	
+	.DESCRIPTION
+		Simple Object to Hashtable conversion.
+		Only converts at a flat level.
+
+		- Hashtables are cloned
+		- Other Dictionaries are translated to hashtable
+		- Other items have their PSObject's properties enumerated and copied to hashtable
+
+		Primitive types will not be handled gracefully and likely end in an empty hashtable.
+	
+	.PARAMETER InputObject
+		The object to convert to hashtable.
+	
+	.EXAMPLE
+		PS C:\> $data | ConvertTo-Hashtable
+
+		Converts $data to hashtable.
+	#>
 	[CmdletBinding()]
 	param (
 		[Parameter(ValueFromPipeline = $true)]
-		$InputObject,
-
-		[object[]]
-		$Parents = @()
+		$InputObject
 	)
 	process {
 		if ($null -eq $InputObject) { return }
