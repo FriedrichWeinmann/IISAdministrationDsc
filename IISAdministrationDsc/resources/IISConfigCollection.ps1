@@ -27,9 +27,8 @@ class IISConfigCollection {
 	[string] $Filter
 
 	[DscProperty()]
-	[Ensure]$Ensure = 'Present'
+	[Ensure] $Ensure = 'Present'
 
-	[DscProperty(NotConfigurable)]
 	[array] $Elements
 
 	[DscProperty(NotConfigurable)]
