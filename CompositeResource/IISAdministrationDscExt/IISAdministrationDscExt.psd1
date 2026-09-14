@@ -5,5 +5,5 @@
 	Author = 'NA'
 	CompanyName = 'NA'
 	Description = 'NA'
-	DscResourcesToExport = @('IISConfigAttributeExt', 'IISConfigCollectionExt', 'IISConfigCollectionItemExt')
+	DscResourcesToExport = @('IISConfigAttributes', 'IISConfigCollections', 'IISConfigCollectionItems')
 }

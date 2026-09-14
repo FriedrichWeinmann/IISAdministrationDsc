@@ -1,4 +1,4 @@
-﻿configuration IISConfigAttributeExt {
+﻿configuration IISConfigAttributes {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
@@ -21,7 +21,7 @@
 	}
 }
 
-configuration IISConfigCollectionExt {
+configuration IISConfigCollections {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
@@ -40,7 +40,7 @@ configuration IISConfigCollectionExt {
 	}
 }
 
-configuration IISConfigCollectionItemExt {
+configuration IISConfigCollectionItems {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
