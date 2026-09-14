@@ -21,6 +21,7 @@
 
 		Converts $data to hashtable.
 	#>
+	[OutputType([hashtable])]
 	[CmdletBinding()]
 	param (
 		[Parameter(ValueFromPipeline = $true)]
