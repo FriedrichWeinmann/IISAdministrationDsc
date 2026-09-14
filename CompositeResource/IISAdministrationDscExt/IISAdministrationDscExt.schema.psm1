@@ -56,7 +56,9 @@ configuration IISConfigCollectionItemExt {
 		$item.Remove('ConfigName')
 
 		if ($item.ContainsKey('Data')) {
-			$item.Data = $item.Data | ConvertTo-Json -Compress 
+			$hash = @{} + $item.Data
+			$hash.Remove('__File')
+			$item.Data = $hash | ConvertTo-Json -Compress 
 		}
 
 		(Get-DscSplattedResource -ResourceName IISConfigCollectionItem -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)

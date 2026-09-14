@@ -20,6 +20,10 @@
 			$files = Get-ChildItem "$moduleRoot\internal\functions" -Recurse -File -Filter "*.ps1"
 			$files | Where-Object BaseName -In $manifest.FunctionsToExport | Should -BeNullOrEmpty
 		}
+
+		It 'Exports not all of Functions, Cmdlets AND Aliases, as this will break resource discovery' -TestCases @{ moduleRoot = $moduleRoot; manifest = $manifest } {
+			$manifest.FunctionsToExport -and $manifest.CmdletsToExport -and $manifest.AliasesToExport | Should -BeFalse 
+		}
 	}
 	
 	Context "Individual file validation" {
