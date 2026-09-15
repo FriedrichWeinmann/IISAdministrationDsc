@@ -1,0 +1,77 @@
+﻿# Resource: IISConfigAttribute
+
+A DSC Resource that defines a configuration entry in an IIS config.
+
+Each attribute must be defined separately, even if on the same config path.
+
+## Example Configuration Entry
+
+```powershell
+IISConfigAttribute LogDirectory {
+    SectionPath = 'system.applicationHost/sites'
+    Site = ''
+    Path = 'siteDefaults/logFiles'
+    AttributeName = 'directory'
+    AttributeValue = 'E:\Logs'
+}
+```
+
+## Settings
+
+### SectionPath
+
+- Type: String
+- Mandatory: True
+- Key: True
+
+The main section path under which the configuration can be found.
+Example: 'system.applicationHost/sites'
+
+### Site
+
+- Type: String
+- Mandatory: False
+- Key: True
+
+The site to which the setting applies.
+If not specified, the attribute will be applied to the server default settings.
+
+> Note: Sections under 'system.applicationHost' ignore the Site setting, other than those under 'system.applicationHost/sites'.
+
+### Path
+
+- Type: String
+- Mandatory: False
+- Key: True
+
+Relative sub-path under the section specified.
+Each path-segment separated by a slash.
+Example: 'siteDefaults/logFiles'
+
+### AttributeName
+
+- Type: String
+- Mandatory: True
+- Key: True
+
+The name of the attribute to update.
+Example: directory
+
+### AttributeValue
+
+- Type: String
+- Mandatory: True
+- Key: False
+
+The value to assign to the attribute.
+Must be provided as a legal JSON string, that will first be converted with 'ConvertFrom-Json'
+Example: "E:\Logs"
+
+### Ensure
+
+- Type: String | [Present|Absent]
+- Mandatory: False
+- Key: False
+
+Whether the attribute should be present or not.
+Parameter not really implemented.

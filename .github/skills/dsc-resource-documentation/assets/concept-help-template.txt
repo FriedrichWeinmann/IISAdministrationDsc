@@ -1,0 +1,26 @@
+﻿TOPIC
+	about_{{ResourceName}}
+
+SHORT DESCRIPTION
+	{{One-sentence description.}}
+
+LONG DESCRIPTION
+	{{Expanded description of purpose, behavior, and important limitations.}}
+
+	# Settings
+	## {{PropertyName}}
+
+	- Type: {{Type}}
+	- Mandatory: {{True|False}}
+	- Key: {{True|False}}
+
+	{{Describe what the property controls, its default when applicable, and any format requirements.}}
+	Example: '{{Value}}'
+
+	## Ensure
+
+	- Type: String | [Present|Absent]
+	- Mandatory: False
+	- Key: False
+
+	{{Describe the actual Present and Absent behavior and the default.}}
