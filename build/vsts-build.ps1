@@ -10,6 +10,8 @@ param (
 	$WorkingDirectory,
 	
 	$Repository = 'PSGallery',
+
+	$PublishPath,
 	
 	[switch]
 	$LocalRepo,
@@ -31,11 +33,12 @@ if (-not $WorkingDirectory)
 	else { $WorkingDirectory = $env:SYSTEM_DEFAULTWORKINGDIRECTORY }
 }
 if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
+if (-not $PublishPath) { $PublishPath = Join-Path -Path $WorkingDirectory -ChildPath publish }
 #endregion Handle Working Directory Defaults
 
 # Prepare publish folder
 Write-Host "Creating and populating publishing directory"
-$publishDir = New-Item -Path $WorkingDirectory -Name publish -ItemType Directory -Force
+$publishDir = New-Item -Path $PublishPath -ItemType Directory -Force
 Copy-Item -Path "$($WorkingDirectory)\IISAdministrationDsc" -Destination $publishDir.FullName -Recurse -Force
 
 #region Gather text data to compile

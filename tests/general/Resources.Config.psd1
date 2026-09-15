@@ -1,0 +1,22 @@
+﻿@{
+	AllowedTypes = @(
+		'bool'
+		'bool[]'
+		'byte'
+		'char'
+		'char[]'
+		'datetime'
+		'double'
+		'int'
+		'int[]'
+		'int64'
+		'int64[]'
+		'uint'
+		'uint[]'
+		'uint64'
+		'uint64[]'
+		'PSCredential'
+		'string'
+		'string[]'
+	)
+}
