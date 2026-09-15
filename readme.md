@@ -10,6 +10,8 @@ Its purpose is to provide extended functionality and greater ease of use.
 |Name|Description|
 |---|---|
 |[IISConfigAttribute](docs/IISConfigAttribute.md)|DSC Resource that defines a configuration entry in an IIS config.|
+|[IISConfigCollection](docs/IISConfigCollection.md)|DSC Resource that manages which items are allowed in an IIS configuration collection.|
+|[IISConfigCollectionItem](docs/IISConfigCollectionItem.md)|DSC Resource that manages an item in an IIS configuration collection.|
 
 ## Installation
 
