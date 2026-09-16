@@ -14,7 +14,10 @@
 		$item.Remove('ConfigName')
 
 		if ($item.ContainsKey('AttributeValue')) {
-			$item.AttributeValue = $item.AttributeValue | ConvertTo-Json -Compress 
+			$val = $item.AttributeValue
+			$val.PSObject.Properties.Remove('__File')
+			$hash = @{ value = $val }
+			$item.AttributeValue = $hash | ConvertTo-Json -Compress
 		}
 
 		(Get-DscSplattedResource -ResourceName IISConfigAttribute -ExecutionName $executionName -Properties $item -NoInvoke).Invoke($item)
